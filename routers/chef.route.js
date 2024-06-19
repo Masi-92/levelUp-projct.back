@@ -7,3 +7,4 @@ import { ROLES } from "../models/user.model.js";
 
 const route = Router();
 route.post("/createChef", auth, hasRole(ROLES.SUPER_ADMIN), createChef);
+route.put("/updateChef/:id", auth, hasRole(ROLES.SUPER_ADMIN), updateChef);
