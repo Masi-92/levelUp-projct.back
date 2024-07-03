@@ -31,4 +31,8 @@ const GENDER = {
     IN_PROGRESS: "inProgress",
     RESERVE: "reserve",
   };
-  
+  const MARITAL_STATUS = {
+    MARRIED: "married",
+    SINGLE: "single",
+    DIVORCED: "divorced",
+  };
