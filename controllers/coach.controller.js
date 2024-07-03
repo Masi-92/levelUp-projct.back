@@ -20,3 +20,23 @@ export const createCoach = async (req, res) => {
   
     res.send(coach);
   };
+
+  export const updateCoach = async (req, res) => {
+    const { id } = req.params;
+    const { username, password, fullName, email, phoneNumber, role } = req.body;
+  
+    const updateBody = {};
+    if (username) updateBody.username = username;
+    if (fullName) updateBody.fullName = fullName;
+    if (email) updateBody.email = email;
+    if (phoneNumber) updateBody.phoneNumber = phoneNumber;
+    if (role) updateBody.role = role;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateBody.password = hashedPassword;
+    }
+    const coach = await userModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
+    if (!coach) return res.status(404).send({ message: "coach not found" });
+    res.send(coach);
+  };
+  
