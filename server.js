@@ -21,4 +21,4 @@ app.listen(PORT, () => {
 app.use("/api", routes);
 
 
- //createSuperAdmin()
+// createSuperAdmin()
