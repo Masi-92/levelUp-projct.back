@@ -38,6 +38,7 @@ export const createClient = async (req, res) => {
   };
 
 
+  
   export const getClientById = async (req, res) => {
     const { id } = req.params;
     const client = await clientModel.findOne({ _id: id, isDeleted: false });
