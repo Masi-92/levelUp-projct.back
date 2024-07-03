@@ -22,3 +22,24 @@ export const createClient = async (req, res) => {
     if (!client) return res.status(404).send({ message: "client not found" });
     res.send(client);
   };
+
+  export const getClient = async (req, res) => {
+    const search = req.query.search || "";
+    const searchRegex = new RegExp(search, "i");
+    const clients = await clientModel.find({
+      isDeleted: false,
+      $or: [
+        { firstName: { $regex: searchRegex } },
+        { lastName: { $regex: searchRegex } },
+        { clientNumber: { $regex: searchRegex } },
+      ],
+    });
+    res.send(clients);
+  };
+
+
+  export const getClientById = async (req, res) => {
+    const { id } = req.params;
+    const client = await clientModel.findOne({ _id: id, isDeleted: false });
+    res.send(client);
+  };
