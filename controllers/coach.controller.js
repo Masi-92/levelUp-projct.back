@@ -66,3 +66,10 @@ export const createCoach = async (req, res) => {
     });
     res.send(coaches);
   };
+
+  export const getCoachById = async (req, res) => {
+    const { id } = req.params;
+    const coach = await userModel.findById(id);
+    res.send(coach);
+  };
+  
