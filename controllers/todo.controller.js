@@ -22,3 +22,15 @@ export const createTodo = async (req, res) => {
     
       res.send(todo);
     };
+
+    export const updateTodo = async (req, res) => {
+        const { id } = req.params;
+        const { text, done } = req.body;
+      
+        const updateBody = {};
+        if (text) updateBody.text = text;
+        if (done !== undefined) updateBody.done = done;
+        const todo = await todoModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
+        if (!todo) return res.status(404).send({ message: "todo not found" });
+        res.send(todo);
+      };
