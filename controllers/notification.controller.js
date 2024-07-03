@@ -26,3 +26,15 @@ export const createNotification = async ({ text, type, subjectId, action, user, 
     if (!notification) return res.status(404).send({ message: "notification not found" });
     res.send(notification);
   };
+
+  export const getNotification = async (req, res) => {
+    const userId = req.user.id;
+  
+    const notifications = await notificationModel
+      .find({
+        user: userId,
+      })
+      .populate("creator", "image fullName username");
+    res.send(notifications);
+  };
+  
