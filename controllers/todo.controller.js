@@ -53,3 +53,10 @@ export const createTodo = async (req, res) => {
         });
         res.send(todos);
       };
+
+      export const getTodoById = async (req, res) => {
+        const { id } = req.params;
+        const todo = await todoModel.findById(id);
+        res.send(todo);
+      };
+      
