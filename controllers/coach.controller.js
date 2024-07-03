@@ -48,3 +48,21 @@ export const createCoach = async (req, res) => {
     res.send(coach);
   };
   
+
+  export const getCoach = async (req, res) => {
+    const search = req.query.search || "";
+    const searchRegex = new RegExp(search, "i");
+    const coaches = await userModel.find({
+      $and: [
+        { $or: [{ role: ROLES.COACH }, { role: ROLES.SECRETARY }] },
+        {
+          $or: [
+            { username: { $regex: searchRegex } },
+            { fullName: { $regex: searchRegex } },
+            { email: { $regex: searchRegex } },
+          ],
+        },
+      ],
+    });
+    res.send(coaches);
+  };
