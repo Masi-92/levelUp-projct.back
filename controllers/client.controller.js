@@ -15,3 +15,10 @@ export const createClient = async (req, res) => {
     if (!client) return res.status(404).send({ message: "client not found" });
     res.send(client);
   };
+
+  export const deleteClient = async (req, res) => {
+    const { id } = req.params;
+    const client = await clientModel.findByIdAndUpdate(id, { $set: { isDeleted: true } });
+    if (!client) return res.status(404).send({ message: "client not found" });
+    res.send(client);
+  };
