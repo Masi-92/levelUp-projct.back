@@ -25,3 +25,10 @@ const GENDER = {
     F: "landwirtschaftliche_fahrzeuge",
   };
   
+
+  const STATUS = {
+    IN_ARBEIT: "inArbeit",
+    IN_PROGRESS: "inProgress",
+    RESERVE: "reserve",
+  };
+  
