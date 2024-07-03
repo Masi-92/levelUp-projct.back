@@ -34,3 +34,10 @@ export const createTodo = async (req, res) => {
         if (!todo) return res.status(404).send({ message: "todo not found" });
         res.send(todo);
       };
+
+      export const deleteTodo = async (req, res) => {
+        const { id } = req.params;
+        const todo = await todoModel.findByIdAndDelete(id);
+        if (!todo) return res.status(404).send({ message: "todo not found" });
+        res.send(todo);
+      };
