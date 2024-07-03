@@ -6,3 +6,12 @@ export const createClient = async (req, res) => {
   
     res.send(client);
   };
+
+
+  export const updateClient = async (req, res) => {
+    const { id } = req.params;
+  
+    const client = await clientModel.findByIdAndUpdate(id, { $set: req.body }, { new: true });
+    if (!client) return res.status(404).send({ message: "client not found" });
+    res.send(client);
+  };
