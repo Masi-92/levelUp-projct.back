@@ -36,3 +36,15 @@ const GENDER = {
     SINGLE: "single",
     DIVORCED: "divorced",
   };
+
+  const WorkPermission = {
+    YES: "yes",
+    NO: "no",
+    SOON: "soon",
+  };
+  
+  const WORK_TIME_STATUS = {
+    FULL_TIME: "fullTime",
+    HALF_TIME: "halfTime",
+    PART_TIME: "partTime",
+  };
