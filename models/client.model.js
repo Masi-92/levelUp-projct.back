@@ -48,3 +48,22 @@ const GENDER = {
     HALF_TIME: "halfTime",
     PART_TIME: "partTime",
   };
+
+  const DISABILITY_TYPE = {
+    FAMILY: "family",
+    SICKNESS: "sickness",
+    MOTIVATION: "motivation",
+    ADDICT: "addict",
+  };
+  
+  const SCHEIN_STATUS = {
+    ALG1: "alg1",
+    ALG2: "alg2",
+    SOCIAL: "social",
+    NONE: "none",
+    RENTE: "rente",
+    SELBSTÄNGIG: "selbsständig",
+    SONSTIG: "sonstig",
+    IN_ARBEIT_TEIL: "inArbeitTeil",
+    IN_ARBEIT_Full: "inArbeitFull",
+  };
