@@ -40,3 +40,11 @@ export const createCoach = async (req, res) => {
     res.send(coach);
   };
   
+
+  export const deleteCoach = async (req, res) => {
+    const { id } = req.params;
+    const coach = await userModel.findByIdAndDelete(id);
+    if (!coach) return res.status(404).send({ message: "coach not found" });
+    res.send(coach);
+  };
+  
