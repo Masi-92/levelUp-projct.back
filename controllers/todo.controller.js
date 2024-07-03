@@ -41,3 +41,15 @@ export const createTodo = async (req, res) => {
         if (!todo) return res.status(404).send({ message: "todo not found" });
         res.send(todo);
       };
+
+      export const getTodo = async (req, res) => {
+        const userId = req.user.id;
+      
+        const search = req.query.search || "";
+        const searchRegex = new RegExp(search, "i");
+        const todos = await todoModel.find({
+          user: userId,
+          $or: [{ text: { $regex: searchRegex } }],
+        });
+        res.send(todos);
+      };
