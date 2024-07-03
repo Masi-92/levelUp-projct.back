@@ -14,3 +14,15 @@ export const createNotification = async ({ text, type, subjectId, action, user, 
     return notification;
   };
   
+
+  export const seenNotification = async (req, res) => {
+    const { id } = req.params;
+  
+    const updateBody = {
+      seen: true,
+    };
+
+    const notification = await notificationModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
+    if (!notification) return res.status(404).send({ message: "notification not found" });
+    res.send(notification);
+  };
