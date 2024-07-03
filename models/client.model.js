@@ -67,3 +67,17 @@ const GENDER = {
     IN_ARBEIT_TEIL: "inArbeitTeil",
     IN_ARBEIT_Full: "inArbeitFull",
   };
+
+  const KUNDIGUNGS_STATUS = {
+    ONE_WEEK: "oneWeek",
+    TWO_WEEK: "twoWeek",
+    ONE_MONTH: "oneMonth",
+    SOON: "soon",
+  };
+  
+  const KNOWN_FROM_WHERE = {
+    INSTAGRAM: "instagram",
+    FACEBOOK: "facebook",
+    FRIENDS: "friends",
+    OTHER: "other",
+  };
