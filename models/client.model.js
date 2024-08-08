@@ -25,6 +25,21 @@ const CAR_LICENSE = {
   F: "landwirtschaftliche_fahrzeuge",
 };
 
+const ExpectedIncomeTime = {
+  Hourly: "hourly",
+  Monthly: "monthly",
+  Yearly: "yearly",
+};
+
+const WorkTime = {
+  FULL_TIME: "fullTime",
+  HALF_TIME: "halfTime",
+  PART_TIME: "partTime",
+  FREE: "free",
+  SHIFT_WORK: "shiftWork",
+  NIGHT_WORK: "nightWork",
+};
+
 const STATUS = {
   IN_ARBEIT: "inArbeit",
   IN_PROGRESS: "inProgress",
@@ -36,6 +51,7 @@ const MARITAL_STATUS = {
   SINGLE: "single",
   DIVORCED: "divorced",
 };
+
 const WorkPermission = {
   YES: "yes",
   NO: "no",
@@ -77,20 +93,32 @@ const KNOWN_FROM_WHERE = {
   INSTAGRAM: "instagram",
   FACEBOOK: "facebook",
   FRIENDS: "friends",
+  TELEGRAM: "telegram",
+  EMPFEHLUNG: "empfehlung",
+  NEWSLETTER: "newsletter",
+  FLYER: "flyer",
   OTHER: "other",
+  GOOGLE: "google",
 };
+
+
 
 const docSchema = new Schema({
   name: String,
   file: String,
 });
 
+const langSchema = new Schema({
+  name : String,
+  rate : Number
+})
+
 const schema = new Schema(
   {
-    gender: { type: String, enum: [GENDER.FEMALE, GENDER.MALE, GENDER.OTHER] },
-    firstName: String,
-    lastName: String,
-    clientNumber: String,
+    gender: { type: String, enum: [GENDER.FEMALE, GENDER.MALE, GENDER.OTHER],required:true },
+    firstName: {type:String,required:true},
+    lastName:{type:String,required:true},
+    clientNumber: {type:String,required:true},
     addressStr: String,
     addressDescription: String,
     zipCode: String,
@@ -99,15 +127,15 @@ const schema = new Schema(
     land: String,
     phoneNumber: String,
     houseTel: String,
-    birthDay: Date,
+    birthDay: {type:Date,required:true},
     email: String,
-    bewertung: Number,
+    rate: Number,
     angebot: String,
     status: { type: String, enum: [STATUS.IN_ARBEIT, STATUS.IN_PROGRESS, STATUS.RESERVE] },
     branch: String,
     knownFromWhere: {
       type: String,
-      enum: [KNOWN_FROM_WHERE.FACEBOOK, KNOWN_FROM_WHERE.FRIENDS, KNOWN_FROM_WHERE.INSTAGRAM, KNOWN_FROM_WHERE.OTHER],
+      enum: [KNOWN_FROM_WHERE.FACEBOOK, KNOWN_FROM_WHERE.FRIENDS, KNOWN_FROM_WHERE.INSTAGRAM, KNOWN_FROM_WHERE.OTHER, KNOWN_FROM_WHERE.TELEGRAM, KNOWN_FROM_WHERE.EMPFEHLUNG, KNOWN_FROM_WHERE.NEWSLETTER, KNOWN_FROM_WHERE.FLYER],
     },
     owner: {
       type: Schema.Types.ObjectId,
@@ -118,6 +146,9 @@ const schema = new Schema(
       ref: "user",
     },
     firstCallDate: Date,
+    firstTerminDate: Date,
+    recentCoached : Boolean,
+    recentCoachedDescription : String,
 
     birthPlace: String,
     nationality: String,
@@ -140,7 +171,9 @@ const schema = new Schema(
     },
     disabilityDescription: String,
 
+    
     skill: [String],
+    langs : [langSchema],
     arbeitLos: Boolean,
     arbeitLosFromDate: Date,
     arbeitFromDate: Date,
@@ -171,7 +204,7 @@ const schema = new Schema(
     moving: Boolean,
     internEinsatz: Boolean,
     wholeCountry: [String],
-    jobPlaceDescription: [String],
+    jobPlaceDescription: String,
 
     favoriteJob: [String],
     favoriteJobDescription: String,
@@ -203,9 +236,34 @@ const schema = new Schema(
         ],
       },
     ],
+    education: {
+      type: String,
+    },
+    isStudent: Boolean,
+    isStudentBisWann: Date,
+    ausbildung: [String],
 
-    resumeDoc: String,
-    picture: String,
+    expectedIncome: Number,
+    expectedIncomeTime: {
+      type: String,
+      enum: [ExpectedIncomeTime.Hourly, ExpectedIncomeTime.Monthly, ExpectedIncomeTime.Yearly],
+    },
+    expectedIncomeTax: Boolean,
+
+    workTime: {
+      type: [String],
+      enum: [
+        WorkTime.FREE,
+        WorkTime.FULL_TIME,
+        WorkTime.HALF_TIME,
+        WorkTime.PART_TIME,
+        WorkTime.NIGHT_WORK,
+        WorkTime.SHIFT_WORK,
+      ],
+    },
+
+    resumeDocs: [String],
+    pictures: [String],
     docs: [docSchema],
 
     isDeleted: { type: Boolean, default: false },
