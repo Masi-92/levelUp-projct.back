@@ -6,6 +6,10 @@ import clientRoute from "./client.route.js";
 import messageRoute from "./message.route.js";
 import todoRoute from "./todo.route.js";
 import notificationRoute from "./notification.route.js";
+import fileRoute from "./file.route.js";
+import trackRoute from "./track.route.js";
+import noteRoute from "./note.route.js";
+import terminRoute from "./termin.route.js";
 
 const router = Router();
 
@@ -16,8 +20,10 @@ router.use("/client", clientRoute);
 router.use("/message", messageRoute);
 router.use("/todo", todoRoute);
 router.use("/notification", notificationRoute);
-
-
-
+router.use("/file", fileRoute);
+router.use("/track", trackRoute);
+router.use("/note", noteRoute);
+router.use("/termin", terminRoute);
 
 export default router;
+
