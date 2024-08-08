@@ -9,8 +9,6 @@ export const createSuperAdmin =async  () => {
     fullName: "SuperAdmin",
     role: ROLES.SUPER_ADMIN,
   }).then(res=>{
-    console.log("super admin created");
   }).catch(err=>{
-    console.log(err);
   })
 };
