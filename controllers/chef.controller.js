@@ -33,14 +33,14 @@ export const updateChef = async (req, res) => {
     updateBody.password = hashedPassword;
   }
   const chef = await userModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
-  if (!chef) return res.status(404).send({ message: "chef not found" });
+  if (!chef) return res.status(404).send({ message: "chef nicht gefunden" });
   res.send(chef);
 };
 
 export const deleteChef = async (req, res) => {
   const { id } = req.params;
   const chef = await userModel.findByIdAndDelete(id);
-  if (!chef) return res.status(404).send({ message: "chef not found" });
+  if (!chef) return res.status(404).send({ message: "chef nicht gefunden" });
   res.send(chef);
 };
 
@@ -57,8 +57,10 @@ export const getChef = async (req, res) => {
   });
   res.send(chefs);
 };
+
 export const getChefById = async (req, res) => {
   const { id } = req.params;
   const chef = await userModel.findById(id);
   res.send(chef);
 };
+
