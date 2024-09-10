@@ -1,7 +1,7 @@
 import clientModel from "../models/client.model.js";
 import { NOTIFICATION_ACTIONS, NOTIFICATION_TYPE } from "../models/notification.model.js";
 import { TrackType } from "../models/track.model.js";
-import userModel from "../models/user.model.js";
+import userModel, { ROLES } from "../models/user.model.js";
 import { createNotification } from "./notification.controller.js";
 import { trackClientEvents } from "./track.controller.js";
 
@@ -63,8 +63,6 @@ export const updateClient = async (req, res) => {
   if (!client) return res.status(404).send({ message: "client not found" });
   res.send(client);
 
-  // console.log(JSON.stringify(client),JSON.stringify(req.body));
-
   trackClientEvents(userId, client._id, TrackType.EDIT_CLIENT, findDifferentFields(client, req.body));
 };
 
@@ -81,7 +79,6 @@ export const updateClientOwner = async (req, res) => {
   client = await client.save();
   const newCoach = await userModel.findById(newCoachId);
 
-  // console.log(JSON.stringify(client),JSON.stringify(req.body));
   res.send(client);
 
   trackClientEvents(userId, client._id, TrackType.ASSIGN_CLIENT, {
@@ -122,15 +119,19 @@ export const deleteClient = async (req, res) => {
 };
 
 export const getClient = async (req, res) => {
-  const userId = req.user.id;
+  const { id: userId, role } = req.user;
 
   const search = req.query.search || "";
   const isMine = req.query.isMine === "true";
+  const isCoach = role === ROLES.COACH;
+  const hasMassname = req.query.hasMassname === "true";
   const searchRegex = new RegExp(search, "i");
   const findQuery = {
     isDeleted: false,
   };
   if (isMine) findQuery.owner = userId;
+  if (!isCoach) findQuery.massname = { $eq: undefined };
+  if (hasMassname) findQuery.massname = { $ne: undefined };
 
   const clients = await clientModel
     .find({
