@@ -88,6 +88,13 @@ const KUNDIGUNGS_STATUS = {
   ONE_MONTH: "oneMonth",
   SOON: "soon",
 };
+const ANGEBUT = {
+  AKTIV_IN_DEN_BRUF: "Aktiv in den Beruf",
+  WACHSTUMSPOTENZIAL: "Wachstumspotenzial für fachkräfte",
+  Mit_BILDUNG_ZUM_ERFOLG: "Mit Bildung zum Erfolg",
+  BEWÄLTIGUNGSTRATEGIE_FÜR_DEN: "Bewältigungsstrategie für besseren Weg in die Zukünft",
+  INTEGRATIONS_COUCHING: "Integrationscoaching",
+};
 
 const KNOWN_FROM_WHERE = {
   INSTAGRAM: "instagram",
@@ -100,7 +107,13 @@ const KNOWN_FROM_WHERE = {
   OTHER: "other",
   GOOGLE: "google",
 };
-
+const MassnameTitle = {
+  AKTIV_IN_DEN_BRUF: "Aktiv in den Beruf",
+  WACHSTUMSPOTENZIAL: "Wachstumspotenzial für fachkräfte",
+  Mit_BILDUNG_ZUM_ERFOLG: "Mit Bildung zum Erfolg",
+  BEWÄLTIGUNGSTRATEGIE_FÜR_DEN: "Bewältigungsstrategie für besseren Weg in die Zukünft",
+  INTEGRATIONS_COUCHING: "Integrationscoaching",
+};
 
 
 const docSchema = new Schema({
@@ -109,16 +122,39 @@ const docSchema = new Schema({
 });
 
 const langSchema = new Schema({
-  name : String,
-  rate : Number
-})
+  name: String,
+  rate: Number,
+});
+
+const massnameSchema = new Schema(
+  {
+    title: {
+      type: String,
+      enum: [
+        MassnameTitle.AKTIV_IN_DEN_BRUF,
+        MassnameTitle.BEWÄLTIGUNGSTRATEGIE_FÜR_DEN,
+        MassnameTitle.INTEGRATIONS_COUCHING,
+        MassnameTitle.Mit_BILDUNG_ZUM_ERFOLG,
+        MassnameTitle.WACHSTUMSPOTENZIAL,
+      ],
+      required: true,
+    },
+    from: { type: Date, required: true },
+    to: { type: Date, required: true },
+    massnamesignature: Date, 
+    massnameTime: Number, // fix
+    restTime: Number, // count down
+    description: String,
+  },
+  { timestamps: true }
+);
 
 const schema = new Schema(
   {
-    gender: { type: String, enum: [GENDER.FEMALE, GENDER.MALE, GENDER.OTHER],required:true },
-    firstName: {type:String,required:true},
-    lastName:{type:String,required:true},
-    clientNumber: {type:String,required:true},
+    gender: { type: String, enum: [GENDER.FEMALE, GENDER.MALE, GENDER.OTHER], required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    clientNumber: { type: String, required: true },
     addressStr: String,
     addressDescription: String,
     zipCode: String,
@@ -127,15 +163,33 @@ const schema = new Schema(
     land: String,
     phoneNumber: String,
     houseTel: String,
-    birthDay: {type:Date,required:true},
+    birthDay: { type: Date, required: true },
     email: String,
     rate: Number,
-    angebot: String,
+    angebut: {
+      type: String,
+      enum: [
+        ANGEBUT.AKTIV_IN_DEN_BRUF,
+        ANGEBUT.BEWÄLTIGUNGSTRATEGIE_FÜR_DEN,
+        ANGEBUT.INTEGRATIONS_COUCHING,
+        ANGEBUT.Mit_BILDUNG_ZUM_ERFOLG,
+        ANGEBUT.WACHSTUMSPOTENZIAL,
+      ],
+    },
     status: { type: String, enum: [STATUS.IN_ARBEIT, STATUS.IN_PROGRESS, STATUS.RESERVE] },
     branch: String,
     knownFromWhere: {
       type: String,
-      enum: [KNOWN_FROM_WHERE.FACEBOOK, KNOWN_FROM_WHERE.FRIENDS, KNOWN_FROM_WHERE.INSTAGRAM, KNOWN_FROM_WHERE.OTHER, KNOWN_FROM_WHERE.TELEGRAM, KNOWN_FROM_WHERE.EMPFEHLUNG, KNOWN_FROM_WHERE.NEWSLETTER, KNOWN_FROM_WHERE.FLYER],
+      enum: [
+        KNOWN_FROM_WHERE.FACEBOOK,
+        KNOWN_FROM_WHERE.FRIENDS,
+        KNOWN_FROM_WHERE.INSTAGRAM,
+        KNOWN_FROM_WHERE.OTHER,
+        KNOWN_FROM_WHERE.TELEGRAM,
+        KNOWN_FROM_WHERE.EMPFEHLUNG,
+        KNOWN_FROM_WHERE.NEWSLETTER,
+        KNOWN_FROM_WHERE.FLYER,
+      ],
     },
     owner: {
       type: Schema.Types.ObjectId,
@@ -147,8 +201,8 @@ const schema = new Schema(
     },
     firstCallDate: Date,
     firstTerminDate: Date,
-    recentCoached : Boolean,
-    recentCoachedDescription : String,
+    recentCoached: Boolean,
+    recentCoachedDescription: [String],
 
     birthPlace: String,
     nationality: String,
@@ -171,9 +225,8 @@ const schema = new Schema(
     },
     disabilityDescription: String,
 
-    
     skill: [String],
-    langs : [langSchema],
+    langs: [langSchema],
     arbeitLos: Boolean,
     arbeitLosFromDate: Date,
     arbeitFromDate: Date,
@@ -265,6 +318,7 @@ const schema = new Schema(
     resumeDocs: [String],
     pictures: [String],
     docs: [docSchema],
+    massname: massnameSchema,
 
     isDeleted: { type: Boolean, default: false },
 
