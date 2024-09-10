@@ -33,23 +33,28 @@ export const updateCoach = async (req, res) => {
     updateBody.password = hashedPassword;
   }
   const coach = await userModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
-  if (!coach) return res.status(404).send({ message: "coach not found" });
+  if (!coach) return res.status(404).send({ message: "coach nicht gefunden" });
   res.send(coach);
 };
 
 export const deleteCoach = async (req, res) => {
   const { id } = req.params;
   const coach = await userModel.findByIdAndDelete(id);
-  if (!coach) return res.status(404).send({ message: "coach not found" });
+  if (!coach) return res.status(404).send({ message: "coach nicht gefunden" });
   res.send(coach);
 };
 
 export const getCoach = async (req, res) => {
   const search = req.query.search || "";
+  const role = req.query.role || "";
   const searchRegex = new RegExp(search, "i");
+  const roleFilterQuery = [];
+  if (role === ROLES.COACH) roleFilterQuery.push({ role: ROLES.COACH });
+  else if (role === ROLES.SECRETARY) roleFilterQuery.push({ role: ROLES.SECRETARY });
+  else roleFilterQuery.push({ role: ROLES.SECRETARY }, { role: ROLES.COACH });
   const coaches = await userModel.find({
     $and: [
-      { $or: [{ role: ROLES.COACH }, { role: ROLES.SECRETARY }] },
+      { $or: roleFilterQuery },
       {
         $or: [
           { username: { $regex: searchRegex } },
