@@ -5,13 +5,13 @@ import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
-  if (!username || !password) return res.status(400).send({ message: "username or password is empty" });
+  if (!username || !password) return res.status(400).send({ message: "Benutzername oder Passwort sind leer" });
 
   const user = await userModel.findOne({ username });
-  if (!user) return res.status(400).send({ message: "username or password is incorrect" });
+  if (!user) return res.status(400).send({ message: "Benutzername oder Passwort sind falsch" });
 
   const isMatched = await bcrypt.compare(password, user.password);
-  if (!isMatched) return res.status(400).send({ message: "username or password is incorrect" });
+  if (!isMatched) return res.status(400).send({ message: "Benutzername oder Passwort sind falsch" });
 
   const token = jwt.sign(
     {
@@ -34,3 +34,4 @@ export const updateProfile = async (req, res) => {
 
   res.send(result)
 };
+
