@@ -166,7 +166,7 @@ const schema = new Schema(
     birthDay: { type: Date, required: true },
     email: String,
     rate: Number,
-    angebut: {
+    angebut: [{
       type: String,
       enum: [
         ANGEBUT.AKTIV_IN_DEN_BRUF,
@@ -175,7 +175,7 @@ const schema = new Schema(
         ANGEBUT.Mit_BILDUNG_ZUM_ERFOLG,
         ANGEBUT.WACHSTUMSPOTENZIAL,
       ],
-    },
+    }],
     status: { type: String, enum: [STATUS.IN_ARBEIT, STATUS.IN_PROGRESS, STATUS.RESERVE] },
     branch: String,
     knownFromWhere: {
