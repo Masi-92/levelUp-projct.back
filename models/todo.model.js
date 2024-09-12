@@ -3,8 +3,12 @@ import mongoose, { model, Schema } from "mongoose";
 const schema = new Schema(
   {
     text: String,
-    done: {type : Boolean,default: false},
+    done: { type: Boolean, default: false },
     user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+    creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
     },
