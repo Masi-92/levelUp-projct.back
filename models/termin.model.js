@@ -18,6 +18,7 @@ const schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "client",
     },
+    clientName: String,
     date: { type: Date, required: true },
     subject: { type: String, required: true },
     description: String,
