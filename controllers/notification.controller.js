@@ -19,6 +19,7 @@ export const seenNotification = async (req, res) => {
   const updateBody = {
     seen: true,
   };
+  
 
   const notification = await notificationModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
   if (!notification) return res.status(404).send({ message: "Benachrichtigung nicht gefunden" });
