@@ -10,6 +10,8 @@ import fileRoute from "./file.route.js";
 import trackRoute from "./track.route.js";
 import noteRoute from "./note.route.js";
 import terminRoute from "./termin.route.js";
+import massnameRoute from "./massname.route.js";
+import jobCenterTeamRoute from "./jobCenter.route.js";
 
 const router = Router();
 
@@ -24,6 +26,7 @@ router.use("/file", fileRoute);
 router.use("/track", trackRoute);
 router.use("/note", noteRoute);
 router.use("/termin", terminRoute);
+router.use("/massname", massnameRoute);
+router.use("/jobCenterTeam", jobCenterTeamRoute);
 
 export default router;
-
