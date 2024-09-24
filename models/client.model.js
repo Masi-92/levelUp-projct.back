@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 
 const GENDER = {
   FEMALE: "female",
@@ -115,10 +115,10 @@ const MassnameTitle = {
   INTEGRATIONS_COUCHING: "Integrationscoaching",
 };
 
-
 const docSchema = new Schema({
   name: String,
   file: String,
+  type: String,
 });
 
 const langSchema = new Schema({
@@ -141,13 +141,21 @@ const massnameSchema = new Schema(
     },
     from: { type: Date, required: true },
     to: { type: Date, required: true },
-    massnamesignature: Date, 
+    massnamesignature: Date,
     massnameTime: Number, // fix
-    restTime: Number, // count down
+    usedTime: Number, // count down
     description: String,
+    approved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+const educationSchema = new Schema({
+  type: String,
+  ausbildung: String,
+  certificate: String,
+  from: Date,
+  to: Date,
+});
 
 const schema = new Schema(
   {
@@ -166,16 +174,18 @@ const schema = new Schema(
     birthDay: { type: Date, required: true },
     email: String,
     rate: Number,
-    angebut: [{
-      type: String,
-      enum: [
-        ANGEBUT.AKTIV_IN_DEN_BRUF,
-        ANGEBUT.BEWÄLTIGUNGSTRATEGIE_FÜR_DEN,
-        ANGEBUT.INTEGRATIONS_COUCHING,
-        ANGEBUT.Mit_BILDUNG_ZUM_ERFOLG,
-        ANGEBUT.WACHSTUMSPOTENZIAL,
-      ],
-    }],
+    angebut: [
+      {
+        type: String,
+        enum: [
+          ANGEBUT.AKTIV_IN_DEN_BRUF,
+          ANGEBUT.BEWÄLTIGUNGSTRATEGIE_FÜR_DEN,
+          ANGEBUT.INTEGRATIONS_COUCHING,
+          ANGEBUT.Mit_BILDUNG_ZUM_ERFOLG,
+          ANGEBUT.WACHSTUMSPOTENZIAL,
+        ],
+      },
+    ],
     status: { type: String, enum: [STATUS.IN_ARBEIT, STATUS.IN_PROGRESS, STATUS.RESERVE] },
     branch: String,
     knownFromWhere: {
@@ -247,7 +257,7 @@ const schema = new Schema(
     },
     jobCenterNumber: String,
     jobCenterClientNumber: String,
-    jobCenterTeam: String,
+    jobCenterTeam: { type: mongoose.Schema.Types.ObjectId, ref: "jobCenterTeam" },
     jobCenterCoach: String,
     jobCenterTel: String,
     jobCenterEmail: String,
@@ -289,12 +299,10 @@ const schema = new Schema(
         ],
       },
     ],
-    education: {
-      type: String,
-    },
+    education: [educationSchema],
+
     isStudent: Boolean,
     isStudentBisWann: Date,
-    ausbildung: [String],
 
     expectedIncome: Number,
     expectedIncomeTime: {
@@ -331,4 +339,18 @@ const schema = new Schema(
   { timestamps: true }
 );
 
-export default model("client", schema);
+schema.index({
+  firstName: "text",
+  lastName: "text",
+  clientNumber: "text",
+  birthDay: "text",
+  phoneNumber: "text",
+  angebut: "text",
+  jobCenterNumber: "text",
+});
+
+const ClientModel = model("client", schema);
+
+// ClientModel.syncIndexes().then(() => console.log("sync successfully"));
+
+export default ClientModel;
