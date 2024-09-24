@@ -1,14 +1,12 @@
 import bcrypt from "bcrypt";
 import terminModel from "../models/termin.model.js";
-import {
-  NOTIFICATION_ACTIONS,
-  NOTIFICATION_TYPE,
-} from "../models/notification.model.js";
+import { NOTIFICATION_ACTIONS, NOTIFICATION_TYPE } from "../models/notification.model.js";
 import userModel, { ROLES } from "../models/user.model.js";
 import clientModel from "../models/client.model.js";
 import { createNotification } from "./notification.controller.js";
 import dayjs from "dayjs";
 import mongoose from "mongoose";
+import { calcTotalPage } from "../utils/express.utils.js";
 
 export const createTermin = async (req, res) => {
   const userId = req.user.id;
@@ -19,21 +17,13 @@ export const createTermin = async (req, res) => {
   const coachUser = await userModel.findById(coach);
 
   if (creator.role === ROLES.SECRETARY && coachUser.role !== ROLES.SECRETARY)
-    return res
-      .status(400)
-      .send({ message: "Sie müssen einen Sekretär auswählen, keinen coach" });
+    return res.status(400).send({ message: "Sie müssen einen Sekretär auswählen, keinen coach" });
 
   if (creator.role === ROLES.COACH && coachUser.role !== ROLES.COACH)
-    return res
-      .status(400)
-      .send({ message: "Sie müssen einen Couch auswählen, keinen Sekretär" });
+    return res.status(400).send({ message: "Sie müssen einen Couch auswählen, keinen Sekretär" });
 
-  if (dayjs().isAfter(date))
-    return res
-      .status(400)
-      .send({
-        message: "Sie können keine Termine in der Vergangenheit erstellen",
-      });
+  // if (dayjs().isAfter(date))
+  //   return res.status(400).send({ message: "Sie können keine Termine in der Vergangenheit erstellen" });
 
   // check with sick days
   const termin = await terminModel.create({
@@ -55,9 +45,7 @@ export const createTermin = async (req, res) => {
       user: coach,
       text:
         `a termin${
-          clientData
-            ? " with " + clientData.firstName + " " + clientData.lastName
-            : ""
+          clientData ? " with " + clientData.firstName + " " + clientData.lastName : ""
         } für Sie erstellt von ` + creator.fullName,
       type: NOTIFICATION_TYPE.INFO,
       subjectId: termin.id,
@@ -66,25 +54,10 @@ export const createTermin = async (req, res) => {
 
 export const updateTermin = async (req, res) => {
   const { id } = req.params;
-  const {
-    client,
-    coach,
-    subject,
-    date,
-    description,
-    endTime,
-    delay,
-    meetingTime,
-    status,
-  } = req.body;
+  const { client, coach, subject, date, description, endTime, delay, meetingTime, status } = req.body;
 
-  if (date && dayjs().isAfter(date))
-    return res
-      .status(400)
-      .send({
-        message:
-          "Sie können nicht einr Termine in der Vergangenheit bearbeiten",
-      });
+  // if (date && dayjs().isAfter(date))
+  //   return res.status(400).send({ message: "Sie können nicht einr Termine in der Vergangenheit bearbeiten" });
 
   let termin = await terminModel.findById(id);
   const updateBody = {};
@@ -99,25 +72,14 @@ export const updateTermin = async (req, res) => {
     updateBody.meetingTime = meetingTime;
 
     const clientData = await clientModel.findById(termin.client);
-    //   restTime: { $gt: 0 },
-    //   to: { $gt: new Date(updateBody.endTime) },
-    // });
-    if (!clientData.massname)
-      return res
-        .status(400)
-        .send({ message: "dieser Client hat keinen aktiven Massennamen" });
+    if (!clientData.massname) return res.status(400).send({ message: "dieser Client hat keinen aktiven Massennamen" });
 
-    clientData.massname.restTime -= meetingTime;
+    clientData.massname.usedTime += meetingTime;
     await clientData.save();
   }
   if (status) updateBody.status = status;
-  termin = await terminModel.findByIdAndUpdate(
-    id,
-    { $set: updateBody },
-    { new: true }
-  );
-  if (!termin)
-    return res.status(404).send({ message: "Termin nicht gefunden" });
+  termin = await terminModel.findByIdAndUpdate(id, { $set: updateBody }, { new: true });
+  if (!termin) return res.status(404).send({ message: "Termin nicht gefunden" });
   res.send(termin);
 };
 
@@ -125,26 +87,21 @@ export const deleteTermin = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
-  const termin = await terminModel.findOneAndDelete({
-    _id: id,
-    creator: userId,
-  });
-  if (!termin)
-    return res.status(404).send({ message: "Termin nicht gefunden" });
+  const termin = await terminModel.findOneAndDelete({ _id: id, creator: userId });
+  if (!termin) return res.status(404).send({ message: "Termin nicht gefunden" });
   res.send(termin);
 };
 
 export const getTermin = async (req, res) => {
   const { id: userId, role: userRole } = req.user;
   const { client, coach, mine, from, to, role } = req.query;
+  const { skip, limit, page, pageSize } = req.pagination;
 
   const filter = {};
 
-  if (client)
-    filter.client = mongoose.Types.ObjectId.createFromHexString(client);
+  if (client) filter.client = mongoose.Types.ObjectId.createFromHexString(client);
   if (coach) filter.coach = mongoose.Types.ObjectId.createFromHexString(coach);
-  if (mine === "true")
-    filter.coach = mongoose.Types.ObjectId.createFromHexString(userId);
+  if (mine === "true") filter.coach = mongoose.Types.ObjectId.createFromHexString(userId);
   if (from && to) filter.date = { $gte: new Date(from), $lt: new Date(to) };
 
   const pipeline = [
@@ -196,10 +153,31 @@ export const getTermin = async (req, res) => {
       },
     },
     { $unwind: { path: "$client", preserveNullAndEmptyArrays: true } }, // Keep null if client doesn't exist
+    { $sort: { date: 1 } },
+    {
+      $facet: {
+        totalDocuments: [{ $count: "count" }], // Count the total matching documents
+        termins: [
+          (!from || !to) && { $skip: skip }, // Skip for pagination
+          (!from || !to) && { $limit: limit }, // Limit for pagination
+        ].filter((item) => item), // Remove falsey values
+      },
+    },
   ].filter((item) => item);
 
-  const termins = await terminModel.aggregate(pipeline).sort({ date: 1 });
-  res.send(termins);
+  const result = await terminModel.aggregate(pipeline);
+
+  const {termins,totalDocuments} = result[0]
+  const count = totalDocuments?.[0]?.count||0;
+  res.send({
+    data: termins,
+    paginationMeta: {
+      page:page-1,
+      pageSize,
+      totalRows: count,
+      totalPages: calcTotalPage(count, pageSize),
+    },
+  });
 };
 export const getTerminById = async (req, res) => {
   const { id } = req.params;
