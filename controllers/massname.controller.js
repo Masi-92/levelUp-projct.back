@@ -1,7 +1,7 @@
 import clientModel from "../models/client.model.js";
 
 export const createMassname = async (req, res) => {
-  const { title, from, to, massnameTime, description, client,massnamesignature } = req.body;
+  const { title, from, to, massnameTime, description, client, massnamesignature } = req.body;
 
   const clientData = await clientModel.findById(client);
   if (!clientData) return res.status(400).send({ message: "client not found" });
@@ -12,20 +12,18 @@ export const createMassname = async (req, res) => {
     from,
     to,
     massnameTime,
-    restTime: massnameTime,
-   massnamesignature,
-   description,
-    
+    usedTime: 0,
+    massnamesignature,
+    description,
   };
-
+ 
   await clientData.save();
 
   res.sendStatus(200);
 };
 
 export const updateMassname = async (req, res) => {
-  const { id } = req.params;
-  const { title, from, to, massnameTime, description, client,massnamesignature } = req.body;
+  const { title, from, to, massnameTime, description, client, massnamesignature,approved } = req.body;
 
   if (!client) return res.status(400).send({ message: "Der Client muss gesendet werden" });
   const clientData = await clientModel.findById(client);
@@ -33,11 +31,12 @@ export const updateMassname = async (req, res) => {
   if (!clientData.massname) return res.status(400).send({ message: "dieser Client hat keinen Maßnname" });
 
   if (title) clientData.massname.title = title;
+  if (approved!==undefined) clientData.massname.approved = approved;
   if (from) clientData.massname.from = from;
   if (to) clientData.massname.to = to;
   if (massnameTime) clientData.massname.massnameTime = massnameTime;
   if (description) clientData.massname.description = description;
-  if (massnamesignature) clientData.massname.massnamesignature=massnamesignature
+  if (massnamesignature) clientData.massname.massnamesignature = massnamesignature;
   await clientData.save();
   res.sendStatus(200);
 };
@@ -56,4 +55,5 @@ export const getMassname = async (req, res) => {
   const massname = (await clientModel.findById(client)).massname;
   res.send(massname);
 };
+
 
